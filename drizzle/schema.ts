@@ -1,6 +1,7 @@
 import {
   int,
   index,
+  decimal,
   mysqlEnum,
   mysqlTable,
   text,
@@ -58,7 +59,7 @@ export const qrCodes = mysqlTable(
   "qr_codes",
   {
     id: int("id").autoincrement().primaryKey(),
-    branchId: int("branchId").notNull(),
+    branchId: int("branchId"),
     name: varchar("name", { length: 160 }).notNull(),
     code: varchar("code", { length: 32 }).notNull(),
     url: varchar("url", { length: 255 }).notNull(),
@@ -74,7 +75,7 @@ export const reviews = mysqlTable(
   "reviews",
   {
     id: int("id").autoincrement().primaryKey(),
-    branchId: int("branchId").notNull(),
+    branchId: int("branchId"),
     qrCodeId: int("qrCodeId"),
     teamId: int("teamId"),
     receiptNo: varchar("receiptNo", { length: 80 }).notNull(),
@@ -82,7 +83,11 @@ export const reviews = mysqlTable(
     groomingRating: int("groomingRating").notNull(),
     serviceRating: int("serviceRating").notNull(),
     comment: text("comment"),
-    status: mysqlEnum("status", ["new", "reviewed", "resolved", "archived"]).default("new").notNull(),
+    note: text("note"),
+    // "new" tetap ada di enum (data lama), tapi UI memperlakukannya sebagai Open
+    // + badge "New". readAt = kapan admin pertama kali membuka detail (unread dot).
+    status: mysqlEnum("status", ["new", "open", "resolved", "archived"]).default("new").notNull(),
+    readAt: timestamp("readAt"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   },
@@ -90,6 +95,7 @@ export const reviews = mysqlTable(
     branchIdx: index("reviews_branch_idx").on(table.branchId),
     qrIdx: index("reviews_qr_idx").on(table.qrCodeId),
     receiptIdx: index("reviews_receipt_idx").on(table.receiptNo),
+    receiptBranchUnique: uniqueIndex("reviews_branch_receipt_unique").on(table.branchId, table.receiptNo),
     createdIdx: index("reviews_created_idx").on(table.createdAt),
     statusIdx: index("reviews_status_idx").on(table.status),
     ratingsIdx: index("reviews_ratings_idx").on(table.installationRating, table.groomingRating, table.serviceRating),
@@ -107,6 +113,7 @@ export const reviewAlerts = mysqlTable(
     status: mysqlEnum("status", ["open", "resolved"]).default("open").notNull(),
     resolvedBy: int("resolvedBy"),
     resolvedAt: timestamp("resolvedAt"),
+    note: text("note"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   },
@@ -132,7 +139,7 @@ export const settings = mysqlTable("settings", {
   companyName: varchar("companyName", { length: 160 }).default("Service Solution").notNull(),
   reviewPageTitle: varchar("reviewPageTitle", { length: 160 }).default("Bagikan pengalaman Anda").notNull(),
   thankYouMessage: varchar("thankYouMessage", { length: 500 }).default("Masukan Anda membantu kami meningkatkan kualitas layanan.").notNull(),
-  negativeThreshold: int("negativeThreshold").default(2).notNull(),
+  negativeThreshold: decimal("negativeThreshold", { precision: 3, scale: 1 }).default("3.5").notNull(),
   timezone: varchar("timezone", { length: 64 }).default("Asia/Jakarta").notNull(),
   primaryColor: varchar("primaryColor", { length: 32 }).default("#1d6f63").notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

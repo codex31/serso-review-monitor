@@ -29,6 +29,41 @@
       "when": 1788850944748,
       "tag": "0003_military_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1788855896445,
+      "tag": "0004_reviews_branch_receipt_unique",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1788934467769,
+      "tag": "0005_add_review_note",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1789042525622,
+      "tag": "0006_furry_tiger_shark",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1789063781035,
+      "tag": "0007_mixed_zuras",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1789123290194,
+      "tag": "0008_smart_the_professor",
+      "breakpoints": true
     }
   ]
 }
